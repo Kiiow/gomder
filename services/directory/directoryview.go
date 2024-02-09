@@ -32,15 +32,14 @@ const (
 	emoji_file   string = "📄"
 )
 
-/* Styling */
-var (
-	directory_basestyle = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("240"))
-)
-
 /* Builder */
-func CreateDirectoryView(currentdir *string) *DirectoryView {
+func NewView() *DirectoryView {
+	currentdir, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	columns := []table.Column{
 		{Title: "", Width: 2},
 		{Title: "Name", Width: 15},
@@ -67,7 +66,7 @@ func CreateDirectoryView(currentdir *string) *DirectoryView {
 
 	t.SetStyles(s)
 
-	d := DirectoryView{t, *currentdir, false}
+	d := DirectoryView{t, currentdir, false}
 	d.directories.SetRows(*d.UpdateDirectory())
 
 	return &d
@@ -141,9 +140,6 @@ func (d DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
-			d.quitting = true
-			return d, tea.Quit
 		case "enter":
 			d.Move()
 		}
@@ -160,5 +156,5 @@ func (d DirectoryView) View() string {
 	if len(d.directories.Rows()) > d.directories.Height() {
 		tableeol = " ..."
 	}
-	return directory_basestyle.Render(d.directories.View() + fmt.Sprintf("\n%s", tableeol))
+	return d.directories.View() + fmt.Sprintf("\n%s", tableeol)
 }

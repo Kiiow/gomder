@@ -29,9 +29,9 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
    - [x] "up" & "down" navigate through folder list
    - [x] "Enter" navigate in (or out) of the directory & update the list
    - [x] Add some style
- - [ ] MULTI WINDOW
-   - [ ] Add a new window
-   - [ ] Add a tab navigation between windows
+ - [x] MULTI WINDOW
+   - [x] Add a new window
+   - [x] Add a tab navigation between windows
  - [ ] TERMINAL
    - [ ] Show the current directory on the terminal first line
    - [ ] Allow typing and executing commands
