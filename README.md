@@ -35,7 +35,7 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
  - [ ] DIR
    - [x] Show current folder list
    - [x] "up" & "down" navigate through folder list
-   - [ ] "Enter" navigate into (o out) of the directory & update the list
+   - [x] "Enter" navigate in (or out) of the directory & update the list
    - [ ] Add some style
  - [ ] TERMINAL
    - [ ] Show the current directory on the terminal first line
