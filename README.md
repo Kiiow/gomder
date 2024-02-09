@@ -18,25 +18,20 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
 │  │                 │  │                                                             │  │
 │  │                 │  │                                                             │  │
 │  └─────────────────┘  └─────────────────────────────────────────────────────────────┘  │
-│                                                                                        │
-│                                                                                        │
+│   gomder                                                              (press ? help)   │
 └────────────────────────────────────────────────────────────────────────────────────────┘
-
-┌ ─ ┐
-│   │
-├ ┬ ┤
-├ ┼ ┤
-└ ┴ ┘
-
 ```
 
 ## TODOs
 
- - [ ] DIR
+ - [x] DIR
    - [x] Show current folder list
    - [x] "up" & "down" navigate through folder list
    - [x] "Enter" navigate in (or out) of the directory & update the list
-   - [ ] Add some style
+   - [x] Add some style
+ - [ ] MULTI WINDOW
+   - [ ] Add a new window
+   - [ ] Add a tab navigation between windows
  - [ ] TERMINAL
    - [ ] Show the current directory on the terminal first line
    - [ ] Allow typing and executing commands
@@ -44,6 +39,8 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
 
 ### Advanced
 
+ - [ ] DIR
+   - [ ] Show some helps
  - [ ] MAN
    - [ ] On executing --help or man command output the result in the MAN view and replace the DIR view with the MAN view
    - [ ] pressing "m" switch to the MAN view
