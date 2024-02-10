@@ -33,8 +33,8 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
    - [x] Add a new window
    - [x] Add a tab navigation between windows
  - [ ] TERMINAL
-   - [ ] Show the current directory on the terminal first line
-   - [ ] Allow typing and executing commands
+   - [x] Show the current directory on the terminal first line
+   - [x] Allow typing and executing commands
    - [ ] Return command result
 
 ### Advanced

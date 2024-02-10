@@ -37,8 +37,10 @@ func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			m.quitting = true
-			return m, tea.Quit
+			if m.currentview != terminal_view {
+				m.quitting = true
+				return m, tea.Quit
+			}
 		case "tab":
 			m.switchView()
 		}
