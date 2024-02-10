@@ -1,8 +1,8 @@
-package directory
+package main
 
 import (
 	"fmt"
-	"kiiow/gomder/services/format"
+	"kiiow/gomder/format"
 	"os"
 	"path"
 
@@ -10,6 +10,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
+
+type DirectoryPath struct {
+	path string
+}
+
+func (d *DirectoryPath) Path() string {
+	return d.path
+}
 
 /* Directory View */
 type DirectoryView struct {
@@ -32,8 +40,28 @@ const (
 	emoji_file   string = "📄"
 )
 
+func (d *DirectoryView) Currentdir() *string {
+	return &d.currentdir
+}
+
+/* Styling */
+func GetStyling() table.Styles {
+	s := table.DefaultStyles()
+	s.Header = s.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		Bold(false)
+	s.Selected = s.Selected.
+		Foreground(lipgloss.Color("229")).
+		Background(lipgloss.Color("147")).
+		Bold(true)
+
+	return s
+}
+
 /* Builder */
-func NewView() *DirectoryView {
+func NewDirectoryView() *DirectoryView {
 	currentdir, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
@@ -53,20 +81,13 @@ func NewView() *DirectoryView {
 		table.WithHeight(15),
 	)
 
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).
-		BorderBottom(true).
-		Bold(false)
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("147")).
-		Bold(true)
+	t.SetStyles(GetStyling())
 
-	t.SetStyles(s)
-
-	d := DirectoryView{t, currentdir, false}
+	d := DirectoryView{
+		directories: t,
+		currentdir:  currentdir,
+		quitting:    false,
+	}
 	d.directories.SetRows(*d.UpdateDirectory())
 
 	return &d
@@ -116,7 +137,7 @@ func (d *DirectoryView) MoveOut() {
 	d.currentdir = path.Join(d.currentdir, "..")
 }
 
-func (d *DirectoryView) Move() {
+func (d *DirectoryView) Move() tea.Msg {
 	row := d.directories.SelectedRow()
 	c := row[directory_filetype]
 	if c == emoji_folder || c == emoji_back {
@@ -128,6 +149,7 @@ func (d *DirectoryView) Move() {
 		d.directories.SetRows(*d.UpdateDirectory())
 		d.directories.GotoTop()
 	}
+	return &DirectoryPath{path: d.currentdir}
 }
 
 /* Rendering */

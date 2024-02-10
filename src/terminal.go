@@ -1,16 +1,26 @@
-package terminal
+package main
 
 import (
+	"fmt"
+	"path"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 /* Terminal View */
 type TerminalView struct {
+	currentdir string
+	counter    int
+}
+
+func (t *TerminalView) UpdateCurrentDir(currentdir string) tea.Msg {
+	t.currentdir = path.Join(currentdir)
+	return t
 }
 
 /* Builder */
-func NewView() *TerminalView {
-	return &TerminalView{}
+func NewTerminalView(currentdir *string) *TerminalView {
+	return &TerminalView{currentdir: *currentdir}
 }
 
 func (t TerminalView) Init() tea.Cmd {
@@ -23,6 +33,8 @@ func (t TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		// Do stuff in here
+		case "+":
+			t.counter++
 		}
 	}
 
@@ -30,5 +42,5 @@ func (t TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (t TerminalView) View() string {
-	return "TerminalView"
+	return fmt.Sprintf("TerminalView %s\n%v", t.currentdir, t.counter)
 }
