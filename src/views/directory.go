@@ -1,10 +1,11 @@
-package main
+package views
 
 import (
 	"fmt"
 	"kiiow/gomder/format"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -89,25 +90,33 @@ func NewDirectoryView() *DirectoryView {
 		currentdir:  currentdir,
 		quitting:    false,
 	}
-	d.directories.SetRows(*d.UpdateDirectory())
+	d.directories.SetRows(*d.updateDirectory())
 
 	return &d
 }
 
 /* Actions */
-func (d *DirectoryView) UpdateDirectory() *[]table.Row {
+func (d *DirectoryView) updateDirectory() *[]table.Row {
 	entries, err := os.ReadDir(d.currentdir)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	rows := []table.Row{}
 
+	rows := []table.Row{}
 	rows = append(rows, table.Row{
 		emoji_back,
 		"../",
 		"",
 		"",
+	})
+
+	// Sort folder first and in alphabetic order
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].IsDir() == entries[j].IsDir() {
+			return entries[i].Name() < entries[j].Name()
+		}
+		return true
 	})
 	for _, entry := range entries {
 		fileType := emoji_file
@@ -130,7 +139,7 @@ func (d *DirectoryView) UpdateDirectory() *[]table.Row {
 	return &rows
 }
 
-func (d *DirectoryView) MoveIn(folder string) {
+func (d *DirectoryView) moveIn(folder string) {
 	var err error
 	d.currentdir, err = filepath.Abs(filepath.Join(d.currentdir, folder))
 	if err != nil {
@@ -138,7 +147,7 @@ func (d *DirectoryView) MoveIn(folder string) {
 	}
 }
 
-func (d *DirectoryView) MoveOut() {
+func (d *DirectoryView) moveOut() {
 	var err error
 	d.currentdir, err = filepath.Abs(filepath.Join(d.currentdir, ".."))
 	if err != nil {
@@ -146,17 +155,17 @@ func (d *DirectoryView) MoveOut() {
 	}
 }
 
-func (d *DirectoryView) Move() tea.Msg {
+func (d *DirectoryView) move() tea.Msg {
 	row := d.directories.SelectedRow()
 	c := row[directory_filetype]
 	if c == emoji_back || c == emoji_folder {
 		if d.directories.Cursor() == 0 {
-			d.MoveOut()
+			d.moveOut()
 
 		} else {
-			d.MoveIn(row[directory_filename])
+			d.moveIn(row[directory_filename])
 		}
-		d.directories.SetRows(*d.UpdateDirectory())
+		d.directories.SetRows(*d.updateDirectory())
 		d.directories.GotoTop()
 	}
 
@@ -174,8 +183,8 @@ func (d DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
-			d.Move()
-			board.Update(d)
+			d.move()
+			Board.Update(d)
 			return d, cmd
 		}
 	}

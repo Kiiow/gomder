@@ -32,10 +32,10 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
  - [x] MULTI WINDOW
    - [x] Add a new window
    - [x] Add a tab navigation between windows
- - [ ] TERMINAL
+ - [x] TERMINAL
    - [x] Show the current directory on the terminal first line
    - [x] Allow typing and executing commands
-   - [ ] Return command result
+   - [x] Return command result
 
 ### Advanced
 
@@ -46,6 +46,8 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
    - [ ] pressing "m" switch to the MAN view
    - [ ] pressing "d" switch to the DIR view
  - [ ] TERMINAL
+   - [ ] Improve command output render
+   - [ ] Add command autocomplete on tab (change the way of switching between windows)
    - [ ] On certain command launch animation
      - [ ] mv -> animation of deplacing a file
      - [ ] cp -> aniamtion of factory duplication

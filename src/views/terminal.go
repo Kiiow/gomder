@@ -1,8 +1,9 @@
-package main
+package views
 
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -30,6 +31,21 @@ var (
 				Foreground(lipgloss.Color("63"))
 )
 
+func ExecuteCommand(dir string, command string) (string, error) {
+	cmdArgs := strings.Split(command, " ")
+
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+	cmd.Dir = dir
+
+	res, err := cmd.Output()
+	var output string
+	if err != nil {
+		return output, err
+	}
+	output = fmt.Sprintf("%s", res)
+	return output, nil
+}
+
 /* Builder */
 func NewTerminalView(currentdir *string) *TerminalView {
 	ti := textinput.New()
@@ -56,14 +72,7 @@ func (t TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			t.commandInput.SetValue("")
 		case "enter":
 			t.lastExecutedCommand = t.commandInput.Value()
-			cmd := exec.Command(t.lastExecutedCommand)
-			cmd.Dir = t.currentdir
-			res, err := cmd.Output()
-			if err != nil {
-				t.commandOutput = err.Error()
-			} else {
-				t.commandOutput = fmt.Sprint(res)
-			}
+			t.commandOutput, _ = ExecuteCommand(t.currentdir, t.lastExecutedCommand)
 			t.commandInput.SetValue("")
 		}
 	}
