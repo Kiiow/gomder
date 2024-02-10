@@ -7,6 +7,7 @@ import (
 
 type view int
 
+/* MainView */
 type MainView struct {
 	views       []tea.Model
 	currentview view
@@ -19,7 +20,7 @@ func NewMainView() *MainView {
 	return &MainView{}
 }
 
-/* Actions */
+/* Rendering */
 func (m MainView) Init() tea.Cmd {
 	return nil
 }
@@ -30,6 +31,9 @@ func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.loaded {
 			m.loaded = true
 		}
+	case DirectoryView:
+		m.views[terminal_view], _ = m.views[terminal_view].Update(msg)
+		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":

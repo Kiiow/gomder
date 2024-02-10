@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"kiiow/gomder/format"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -38,6 +38,7 @@ const (
 	emoji_back   string = "🔙"
 	emoji_folder string = "📁"
 	emoji_file   string = "📄"
+	emoji_bipper string = "📟"
 )
 
 func (d *DirectoryView) Currentdir() *string {
@@ -62,7 +63,7 @@ func GetStyling() table.Styles {
 
 /* Builder */
 func NewDirectoryView() *DirectoryView {
-	currentdir, err := os.Getwd()
+	currentdir, err := filepath.Abs(".")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -130,25 +131,35 @@ func (d *DirectoryView) UpdateDirectory() *[]table.Row {
 }
 
 func (d *DirectoryView) MoveIn(folder string) {
-	d.currentdir = path.Join(d.currentdir, folder)
+	var err error
+	d.currentdir, err = filepath.Abs(filepath.Join(d.currentdir, folder))
+	if err != nil {
+		os.Exit(1)
+	}
 }
 
 func (d *DirectoryView) MoveOut() {
-	d.currentdir = path.Join(d.currentdir, "..")
+	var err error
+	d.currentdir, err = filepath.Abs(filepath.Join(d.currentdir, ".."))
+	if err != nil {
+		os.Exit(1)
+	}
 }
 
 func (d *DirectoryView) Move() tea.Msg {
 	row := d.directories.SelectedRow()
 	c := row[directory_filetype]
-	if c == emoji_folder || c == emoji_back {
+	if c == emoji_back || c == emoji_folder {
 		if d.directories.Cursor() == 0 {
 			d.MoveOut()
+
 		} else {
 			d.MoveIn(row[directory_filename])
 		}
 		d.directories.SetRows(*d.UpdateDirectory())
 		d.directories.GotoTop()
 	}
+
 	return &DirectoryPath{path: d.currentdir}
 }
 
@@ -164,6 +175,8 @@ func (d DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			d.Move()
+			board.Update(d)
+			return d, cmd
 		}
 	}
 	d.directories, cmd = d.directories.Update(msg)
