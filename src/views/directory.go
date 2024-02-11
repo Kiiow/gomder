@@ -2,6 +2,7 @@ package views
 
 import (
 	"fmt"
+	"kiiow/gomder/config"
 	"kiiow/gomder/format"
 	"os"
 	"path/filepath"
@@ -24,7 +25,6 @@ func (d *DirectoryPath) Path() string {
 type DirectoryView struct {
 	directories table.Model
 	currentdir  string
-	quitting    bool
 }
 
 type columntype int
@@ -88,7 +88,6 @@ func NewDirectoryView() *DirectoryView {
 	d := DirectoryView{
 		directories: t,
 		currentdir:  currentdir,
-		quitting:    false,
 	}
 	d.directories.SetRows(*d.updateDirectory())
 
@@ -173,18 +172,18 @@ func (d *DirectoryView) move() tea.Msg {
 }
 
 /* Rendering */
-func (d DirectoryView) Init() tea.Cmd {
+func (d *DirectoryView) Init() tea.Cmd {
 	return nil
 }
 
-func (d DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (d *DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
 			d.move()
-			Board.Update(d)
+			Board.views[config.TerminalIndex].Update(*d)
 			return d, cmd
 		}
 	}
@@ -192,10 +191,7 @@ func (d DirectoryView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return d, cmd
 }
 
-func (d DirectoryView) View() string {
-	if d.quitting {
-		return ""
-	}
+func (d *DirectoryView) View() string {
 	tableeol := ""
 	if len(d.directories.Rows()) > d.directories.Height() {
 		tableeol = " ..."

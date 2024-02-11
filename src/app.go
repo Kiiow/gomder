@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"kiiow/gomder/config"
 	"kiiow/gomder/views"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	config.Load()
 	views.Board = views.NewMainView()
 	p := tea.NewProgram(views.Board)
 	if _, err := p.Run(); err != nil {

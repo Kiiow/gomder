@@ -12,14 +12,12 @@ var Board *MainView
 
 /* MainView */
 type MainView struct {
-	views       []tea.Model
-	currentView config.View
-	quitting    bool
-	loaded      bool
-}
-
-func (m *MainView) CurrentView() config.View {
-	return m.currentView
+	views           []tea.Model
+	ViewStatusStyle []styles.ViewStyle
+	CurrentView     config.View
+	infoBarView     *InfoBarView
+	quitting        bool
+	loaded          bool
 }
 
 /* Builder */
@@ -36,43 +34,42 @@ func (m *MainView) initViews() {
 		d,
 		NewTerminalView(d.Currentdir()),
 	}
-	m.currentView = config.DefaultViewIndex
+	m.ViewStatusStyle = styles.InitViewStatusStyles(len(m.views))
+	m.CurrentView = config.DefaultViewIndex
 }
 
 func (m *MainView) switchView() {
-	if m.currentView == config.TerminalIndex {
-		m.currentView = config.DefaultViewIndex
+	if m.CurrentView == config.TerminalIndex {
+		m.CurrentView = config.DefaultViewIndex
 	} else {
-		m.currentView++
+		m.CurrentView++
 	}
 }
 
 func (m *MainView) GetViewAssociatedStyled(view config.View) lipgloss.Style {
-	if view == m.currentView {
+	if view == m.CurrentView {
 		return styles.FocusedStyle
 	}
 	return styles.BaseStyle
 }
 
 /* Rendering */
-func (m MainView) Init() tea.Cmd {
+func (m *MainView) Init() tea.Cmd {
 	return nil
 }
 
-func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		if !m.loaded {
+			height, width := styles.UpdateStyleHeighAndWidth(msg.Height, msg.Width)
 			m.loaded = true
+			m.infoBarView = NewInfoBarView(height, width)
 		}
-		styles.UpdateStyleHeighAndWidth(msg.Height, msg.Width)
-	case DirectoryView:
-		m.views[config.TerminalIndex], _ = m.views[config.TerminalIndex].Update(msg)
-		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
-			if m.currentView != config.TerminalIndex {
+			if m.CurrentView != config.TerminalIndex {
 				m.quitting = true
 				return m, tea.Quit
 			}
@@ -80,21 +77,26 @@ func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.switchView()
 		}
 	}
+	m.infoBarView, _ = m.infoBarView.Update(msg)
 	var cmd tea.Cmd
-	m.views[m.currentView], cmd = m.views[m.currentView].Update(msg)
+	m.views[m.CurrentView], cmd = m.views[m.CurrentView].Update(msg)
 	return m, cmd
 }
 
-func (m MainView) View() string {
+func (m *MainView) View() string {
 	if m.quitting {
 		return ""
 	}
 	if m.loaded {
 		return styles.BoardStyle.Render(
-			lipgloss.JoinHorizontal(
+			lipgloss.JoinVertical(
 				lipgloss.Left,
-				m.GetViewAssociatedStyled(config.DirectoryIndex).Render(m.views[config.DirectoryIndex].View()),
-				m.GetViewAssociatedStyled(config.TerminalIndex).Render(m.views[config.TerminalIndex].View()),
+				lipgloss.JoinHorizontal(
+					lipgloss.Left,
+					m.GetViewAssociatedStyled(config.DirectoryIndex).Render(m.views[config.DirectoryIndex].View()),
+					m.GetViewAssociatedStyled(config.TerminalIndex).Render(m.views[config.TerminalIndex].View()),
+				),
+				m.infoBarView.View(),
 			),
 		)
 	} else {

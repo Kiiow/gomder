@@ -53,14 +53,17 @@ func NewTerminalView(currentdir *string) *TerminalView {
 	ti.Focus()
 	ti.Width = 50
 
-	return &TerminalView{currentdir: *currentdir, commandInput: ti}
+	return &TerminalView{
+		currentdir:   *currentdir,
+		commandInput: ti,
+	}
 }
 
-func (t TerminalView) Init() tea.Cmd {
+func (t *TerminalView) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (t TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (t *TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case DirectoryView:
@@ -81,7 +84,7 @@ func (t TerminalView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return t, cmd
 }
 
-func (t TerminalView) View() string {
+func (t *TerminalView) View() string {
 	return workingdirectory.Render(t.currentdir) +
 		fmt.Sprintf("\n%s", t.lastExecutedCommand) +
 		t.commandInput.View() +

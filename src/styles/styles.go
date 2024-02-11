@@ -16,7 +16,7 @@ var (
 			BorderForeground(lipgloss.Color("62"))
 )
 
-func UpdateStyleHeighAndWidth(height, width int) {
+func UpdateStyleHeighAndWidth(height, width int) (int, int) {
 	heightFixed := height - 2
 	widthFixed := width - 2
 
@@ -25,4 +25,7 @@ func UpdateStyleHeighAndWidth(height, width int) {
 
 	BaseStyle.Height(heightFixed - 4)
 	FocusedStyle.Height(heightFixed - 4)
+	widthBorderFixed := widthFixed - 2
+
+	return heightFixed, widthBorderFixed
 }

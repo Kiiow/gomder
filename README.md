@@ -54,5 +54,6 @@ Go terminal layout improved using [charm](https://github.com/charmbracelet) libr
      - [ ] rm -> animation of droping in bin
      - [ ] ...
  - [ ] INFO_BAR
+   - [ ] Add InfoBar
    - [ ] Application version
    - [ ] Pressing "?" change the terminal window to an help menu (_what type of information_)
