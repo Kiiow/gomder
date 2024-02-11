@@ -28,7 +28,7 @@ var (
 	input_default_prompt = fmt.Sprintf("\n%s > ", emoji_bipper)
 	workingdirectory     = lipgloss.NewStyle().
 				Bold(true).
-				Foreground(lipgloss.Color("63"))
+				Foreground(lipgloss.Color("111"))
 )
 
 func ExecuteCommand(dir string, command string) (string, error) {
@@ -47,7 +47,7 @@ func ExecuteCommand(dir string, command string) (string, error) {
 }
 
 /* Builder */
-func NewTerminalView(currentdir *string) *TerminalView {
+func NewTerminalView(currentdir *string, height, width int) *TerminalView {
 	ti := textinput.New()
 	ti.Prompt = input_default_prompt
 	ti.Focus()

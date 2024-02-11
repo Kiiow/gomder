@@ -22,13 +22,23 @@ const (
 )
 
 /* Config File */
-var Config *ConfigIni
+
+var (
+	Config *ConfigIni
+)
+
+func createDefaultConfig() *ConfigIni {
+	defaultConfig := &ConfigIni{}
+	defaultConfig.Application.Name = "Gmder"
+	return defaultConfig
+}
 
 func Load() {
 	inidata, err := ini.Load("./config/app.ini")
 	if err != nil {
 		fmt.Printf("Failed to read ini file: %v", err)
-		os.Exit(1)
+		Config = createDefaultConfig()
+		return
 	}
 
 	Config = &ConfigIni{}

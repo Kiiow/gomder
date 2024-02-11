@@ -63,7 +63,7 @@ func GetStyling() table.Styles {
 }
 
 /* Builder */
-func NewDirectoryView() *DirectoryView {
+func NewDirectoryView(height, width int) *DirectoryView {
 	currentdir, err := filepath.Abs(".")
 	if err != nil {
 		fmt.Println(err)
@@ -80,7 +80,7 @@ func NewDirectoryView() *DirectoryView {
 	t := table.New(
 		table.WithColumns(columns),
 		table.WithFocused(true),
-		table.WithHeight(15),
+		table.WithHeight(height-6),
 	)
 
 	t.SetStyles(GetStyling())

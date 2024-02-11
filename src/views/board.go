@@ -23,16 +23,19 @@ type MainView struct {
 /* Builder */
 func NewMainView() *MainView {
 	board := MainView{}
-	board.initViews()
 	return &board
 }
 
 /* Actions */
-func (m *MainView) initViews() {
-	d := NewDirectoryView()
+func (m *MainView) initViews(height, width int) {
+	d := NewDirectoryView(height, width)
 	m.views = []tea.Model{
 		d,
-		NewTerminalView(d.Currentdir()),
+		NewTerminalView(
+			d.Currentdir(),
+			height,
+			width,
+		),
 	}
 	m.ViewStatusStyle = styles.InitViewStatusStyles(len(m.views))
 	m.CurrentView = config.DefaultViewIndex
@@ -64,6 +67,7 @@ func (m *MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.loaded {
 			height, width := styles.UpdateStyleHeighAndWidth(msg.Height, msg.Width)
 			m.loaded = true
+			m.initViews(height, width)
 			m.infoBarView = NewInfoBarView(height, width)
 		}
 	case tea.KeyMsg:
@@ -77,7 +81,6 @@ func (m *MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.switchView()
 		}
 	}
-	m.infoBarView, _ = m.infoBarView.Update(msg)
 	var cmd tea.Cmd
 	m.views[m.CurrentView], cmd = m.views[m.CurrentView].Update(msg)
 	return m, cmd

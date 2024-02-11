@@ -23,8 +23,8 @@ func UpdateStyleHeighAndWidth(height, width int) (int, int) {
 	BoardStyle.Height(heightFixed)
 	BoardStyle.Width(widthFixed)
 
-	BaseStyle.Height(heightFixed - 4)
-	FocusedStyle.Height(heightFixed - 4)
+	BaseStyle.Height(heightFixed - 3)
+	FocusedStyle.Height(heightFixed - 3)
 	widthBorderFixed := widthFixed - 2
 
 	return heightFixed, widthBorderFixed
